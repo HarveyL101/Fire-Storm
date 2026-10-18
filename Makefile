@@ -1,6 +1,17 @@
-SRC = "src/**.cpp"
-INCLUDE ="include/**.hpp"
-TARGET = "build/fire_storm.exe"
+COMPILER = g++
 FLAGS = "-std=c++20 -Wall -Wextra -Wpedantic -Werror"
+SRC = "src/%.cpp"
+INCLUDE ="include/%.hpp"
+TARGET = build
 
-g++ $(SRC) $(INCLUDE) $(TARGET) $(FLAGS) 
+COMPILE = $(COMPILER) $(FLAGS)
+
+make:
+	$(COMPILE) $(SRC) $(INCLUDE) $(TARGET)
+
+build: 
+	mkdir -p $(TARGET)
+
+clean:
+	rm -rf $(TARGET)
+
