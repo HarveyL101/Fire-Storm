@@ -21,7 +21,7 @@ In adherence to the problem spec's rule of 'No third-party libraries' external t
 
 ## AI/LLM Declaration
 
+## Conclusion/ Closing Comments
 
 
-
-> Author: Harvey Lopez | HarveyLopez101@gmail.com | [Github Account](www.github.com/HarveyL101)
+> Author: Harvey Lopez | HarveyLopez101@gmail.com | [Github Account](www.github.com/HarveyL101) | [LinkedIn](https://www.linkedin.com/in/harvey-lopez-2009b52b4)
