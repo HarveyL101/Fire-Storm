@@ -30,4 +30,8 @@ In chronological order, the following table outlines the structure of CTFS packe
 
 To signal the end of a CTFS transmission, a packet with a payload of two empty bytes are sent as a stop signal.
 
+In order to retain the order of packets and form a valid PDF, the incremental value hidden in the `eth.dst` header (See *yellow* values) can be used to track the position of each packet. This protects from cases of connection interference where packets are received out of sequential order (See *red* values), which is visible in the test data.
+
+![Retaining Packet Order](/imgs/packet-ordering.png)
+> Retaining Packet Order
 ###
