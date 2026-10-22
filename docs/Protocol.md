@@ -16,8 +16,8 @@ In chronological order, the following table outlines the structure of CTFS packe
 **Frame Structure:**
 | Name | Size (bytes) | Range (byte(s)) |
 |---|---|---|
-| Header | 14 | 0 - 13 |
-| Data | <= 514 | 14 - 527 |
+| Header | 16 | 0 - 15 |
+| Data | <= 512 | 16 - 527 |
 
 **Header Structure:**
 | Component Name | Alias | Size (bytes) | Range (byte(s)) |
@@ -28,7 +28,10 @@ In chronological order, the following table outlines the structure of CTFS packe
 | Source | `eth.src` | 6 | 6 - 11 |
 | Type | `eth.type` | 2 | 12 - 14 | 
 
-To signal the end of a CTFS transmission, a packet with a payload of two empty bytes are sent as a stop signal.
+To signal the end of a CTFS transmission, a packet with an empty payload are sent as a stop signal. 
+
+> [!NOTE]
+> If analysing the network traffic using WireShark, due to the unknown nature of this *CTFS* protocol the two-byte `00 00` padding is included within the data payload. This is misleading as the reconstructed PDF document would not align/ format properly if NULL chunks were present at the intersection of each packet's contents.
 
 In order to retain the order of packets and form a valid PDF, the incremental value hidden in the `eth.dst` header (See *yellow* values) can be used to track the position of each packet. This protects from cases of connection interference where packets are received out of sequential order (See *red* values), which is visible in the test data.
 

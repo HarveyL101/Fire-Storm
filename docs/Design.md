@@ -18,6 +18,8 @@ After reviewing the System Flow Chart, an appropriate structure for this case se
 
 This layer handles the bulk of the data moving through the system, checking & filtering out the majority of network traffic via port forwarding to `PORT 5744`. Any headers containing the CTFS tag would then be passed onto the state machine.
 
+* Add notes about socket options choices e.g `SOL_SOCKET` and `SO_REUSEADDR` within `setsockopt()`.
+
 ### State Machine
 
 ### Test Handler
