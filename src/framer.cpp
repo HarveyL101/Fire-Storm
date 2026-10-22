@@ -9,6 +9,4 @@ class PacketFramer:: {
     public:
         char* buffer[1024]; 
         ssize_t held; // Number of bytes held by buffer.
-
-        new Network
 };
