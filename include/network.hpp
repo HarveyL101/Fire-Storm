@@ -1,5 +1,5 @@
-#ifndef NETWORK_MANAGER_HPP
-#define NETWORK_MANAGER_HPP
+#ifndef NETWORK_HPP
+#define NETWORK_HPP
 
 #include <sys/socket.h>
 #include <netinet/in.h>
@@ -8,15 +8,17 @@
 class NetworkManager
 {
     private:
-        sockaddr_in address{};
-        uint16_t PORT_LS = 5733;
-        uint16_t PORT_FD = 5744;
+        sockaddr_in address{};         // Zero initialised.
+        int server_socket = -1;        // Original listening socket.
+        const uint16_t PORT_LS = 5733; // Listening Port.
+        const uint16_t PORT_FD = 5744; // Forwarding Port.
+        const uint8_t MAX_CON = 16;    // Maximum connections to be queued.
 
     public:
-        uint32_t server_socket;
-
-        int8_t setup(void);
-        int32_t begin(void);
+        int setup(void);
+        int begin(void);
+        void forward(void);
+        void terminate(uint8_t PORT);
 };
 
 #endif
