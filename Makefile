@@ -1,17 +1,22 @@
 COMPILER = g++
-FLAGS = "-std=c++20 -Wall -Wextra -Wpedantic -Werror"
-SRC = "src/%.cpp"
-INCLUDE ="include/%.hpp"
-TARGET = build
+FLAGS = --std=c++20 -Wall -Wextra -Wpedantic -Werror
+SRC = src/main.cpp
+# INCLUDE =""
+TARGET = build/dump_test.exe
 
-COMPILE = $(COMPILER) $(FLAGS)
+.PHONY: all build clean run
 
-make:
-	$(COMPILE) $(SRC) $(INCLUDE) $(TARGET)
+all: $(TARGET)
 
-build: 
-	mkdir -p $(TARGET)
+$(TARGET): $(SRC) | build
+	$(COMPILER) $(FLAGS) $(SRC) -o $(TARGET)
 
-clean:
-	rm -rf $(TARGET)
+build:
+	mkdir -p build
+
+clean: 
+	rm -rf build
+
+run:
+	./$(TARGET)
 
