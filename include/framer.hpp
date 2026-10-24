@@ -15,10 +15,12 @@ class PacketFramer
 
     public:
         enum class Status { NeedMore, Complete, Invalid };
+        enum class Kind { None, CTFS, Forward };
 
         struct Result {
             Status status;
-            ssize_t length;
+            size_t length = 0;
+            Kind   kind   = Kind::None;
         };
 
         Result frame(const std::vector<uint8_t> &buffer);
