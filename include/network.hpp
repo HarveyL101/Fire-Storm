@@ -17,8 +17,8 @@ class NetworkManager
     public:
         int setup(void);
         int begin(void);
-        void forward(void);
-        void terminate(uint8_t PORT);
+        // void forward(void);
+        // void terminate(uint8_t PORT);
 };
 
 #endif
