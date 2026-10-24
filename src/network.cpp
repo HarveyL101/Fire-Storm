@@ -43,23 +43,23 @@ int NetworkManager::setup(void)
 int NetworkManager::begin(void)
 {
     int client = accept(server_socket, nullptr, nullptr);
-    if (client == -1) 
+    if (client == -1)
     {
-        printf("Failed to accept client at File Descriptor: %d\n", server_socket); 
+        printf("Failed to accept client at File Descriptor: %d\n", server_socket);
         return -1;
     }
     return client;
 }
 
-void NetworkManager::forward(void)
-{
-    // This will forward the traffic passed to it.
-    // Connect to PORT 5744 here, to avoid a broken donnection during test.py's startup.
-}
+// void NetworkManager::forward(void)
+// {
+//     // This will forward the traffic passed to it.
+//     // Connect to PORT 5744 here, to avoid a broken donnection during test.py's startup.
+//     return;
+// }
 
-void NetworkManager::terminate(uint8_t PORT)
-{
-    // This will close off all active connections.
-    PORT++; // meaningless change to get it to compile for a test.
-    return;
-}
+// void NetworkManager::terminate(uint8_t PORT)
+// {
+//     // This will close off all active connections.
+//     return;
+// }
