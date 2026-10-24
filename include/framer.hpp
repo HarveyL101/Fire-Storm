@@ -2,17 +2,27 @@
 #define FRAMER_HPP
 
 #include <netinet/in.h>
+#include <vector>
+
 
 class PacketFramer
 {
     private:
-        const uint8_t CTFS_LEN = 16; // Desired packets' header length. 
-        static const int BUFFER_CAP = 1024;
-    public:
-        unsigned char buffer[BUFFER_CAP]; // Char because the byte stream is received individually.
-        ssize_t held = 0; // Number of bytes held by buffer.
+        const int MAX_PACKET           = 528; // Maximum observed size of network packets.
+        const uint8_t CTFS_HEADER_SIZE = 16;  // ctfs marker + sequenceID + payload length + 8 unknown bytes.
+        const uint8_t ETH_HEADER_SIZE  = 14;  // Observed ethernet header length.
+        const uint8_t MIN_IP_HEADER    = 20;  // Observed IP header length.
 
-        void frame(void);
+    public:
+        enum class Status { NeedMore, Complete, Invalid };
+
+        struct Result {
+            Status status;
+            ssize_t length;
+        };
+
+        Result frame(const std::vector<uint8_t> &buffer);
+        bool isCTFS(const std::vector<uint8_t> &header);
 };
 
 #endif
