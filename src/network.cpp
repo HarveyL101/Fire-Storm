@@ -1,13 +1,14 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <stdio.h>
+#include <vector>
 
 #include "network.hpp"
 
 // Listening Port.
 // Forwarding Port.
 
-int NetworkManager::setup(void)
+int NetworkManager::setupLS(void)
 {
     server_socket = socket(AF_INET, SOCK_STREAM, 0); // Creation of socket File Descriptor.
     if (server_socket == -1) { printf("Failed to create a socket\n"); return -1; }
@@ -21,11 +22,11 @@ int NetworkManager::setup(void)
         return -1;
     }
 
-    address.sin_family = AF_INET;                // IPv4 address family.
-    address.sin_port = htons(PORT_LS);           // Listening port in network byte order.
-    address.sin_addr.s_addr = htonl(INADDR_ANY); // Will bind to any available local IPv4 interface.
+    ls_address.sin_family      = AF_INET;           // IPv4 address family.
+    ls_address.sin_port        = htons(PORT_LS);    // Listening port (5733) in network byte order.
+    ls_address.sin_addr.s_addr = htonl(INADDR_ANY); // Will bind to any available local IPv4 interface.
 
-    if (bind(server_socket, reinterpret_cast<sockaddr*>(&address), sizeof(address)) == -1)
+    if (bind(server_socket, reinterpret_cast<sockaddr*>(&ls_address), sizeof(ls_address)) == -1)
     {
         printf("Failed to bind to PORT(%d)\n", PORT_LS);
         return -1;
@@ -51,15 +52,49 @@ int NetworkManager::begin(void)
     return client;
 }
 
-// void NetworkManager::forward(void)
-// {
-//     // This will forward the traffic passed to it.
-//     // Connect to PORT 5744 here, to avoid a broken donnection during test.py's startup.
-//     return;
-// }
+int NetworkManager::setupFD(void)
+{
+    const int yes = 1;
+    // Create a socket to transmit information from.
+    int forward_socket = socket(AF_INET, SOCK_STREAM, 0);
+    if (forward_socket == -1) { printf("Failed to create a forwarding socket.\n"); return -1; }
 
-// void NetworkManager::terminate(uint8_t PORT)
+    if(setsockopt(forward_socket, SOL_SOCKET, SO_LINGER, &yes, sizeof(yes)) == -1)
+    {
+        printf("Failed to set socket options.\n");
+        return -1;
+    }
+    
+    // Connect to PORT 5744 (lazy connect).
+    fd_address.sin_family      = AF_INET;           // IPv4 address family.
+    fd_address.sin_port        = PORT_FD;           // Forwarding destination (PORT 5744).
+    fd_address.sin_addr.s_addr = htonl(INADDR_ANY); // Will bind to any availale local IPv4 interface.
+
+    if (connect(forward_socket, reinterpret_cast<sockaddr*>(&fd_address), sizeof(fd_address)) == -1)
+    {
+        printf("Failed to connect to PORT(%d).\n", PORT_FD);
+        return -1;
+    }
+
+    return 0;
+}
+
+int NetworkManager::forward(const std::vector<uint8_t> &packet)
+{
+    // Send the packet to its destination.
+    if (sendto(forward_socket, &packet, sizeof(packet), 0, 
+        reinterpret_cast<sockaddr*>(&fd_address), sizeof(fd_address)) == -1)
+    {
+        printf("Failed to send message:\n\tSocket: %d\n\tPort: %d\n\tPacket: %p", forward_socket, fd_address.sin_port, packet);
+        return -1;
+    }
+
+    return 0;
+}
+
+// void NetworkManager::terminate()
 // {
-//     // This will close off all active connections.
+//     // This will close off all active connections (5733 & 5744).
+//     // shutdown() keeps the file descriptor open for other uses, use close() to free that descriptor.
 //     return;
 // }
