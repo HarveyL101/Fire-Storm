@@ -1,6 +1,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <stdio.h>
+#include <span>
 
 #include "network.hpp"
 #include "framer.hpp"
@@ -39,11 +40,17 @@ int main(void)
             // Code for sending CTFS to state machine, otherwise forward the first -> r.length bytes ...
             if (r.status == PacketFramer::Status::Complete)
             {
-                std::vector<uint8_t> packet(holding.begin(), holding.begin() + r.length);
                 // CTFS packets are passed on for PDF writing.
-                if (r.kind == PacketFramer::Kind::CTFS) { SM.pass(packet); }
-                // Non-CTFS traffic is sent to the 5744 listening port.
-                if (r.kind == PacketFramer::Kind::Forward) { NM.forward(packet); }
+                if (r.kind == PacketFramer::Kind::CTFS) 
+                { 
+                    std::span<const uint8_t> payload(holding.data() + PacketFramer::CTFS_HEADER_SIZE,
+                                                     r.length - PacketFramer::CTFS_HEADER_SIZE);
+                    SM.pass(payload, r.seqID); 
+                } else {
+                    // Non-CTFS traffic is sent to the 5744 listening port.
+                    NM.forward(holding.data(), r.length);
+                }
+                
             }
 
             // Clear the now dispatched bytes and realign the start of the next with holding[0]
