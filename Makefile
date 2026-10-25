@@ -1,15 +1,15 @@
-COMPILER = g++
-FLAGS = -std=c++20 -Wall -Wextra -Wpedantic -Werror -Iinclude
-SRC = src/*.cpp
-INCLUDE = include/*.hpp
-TARGET = build/output.exe
+CXX      = g++
+CXXFLAGS = -std=c++20 -Wall -Wextra -Wpedantic -Werror -Iinclude
+SRC      = $(wildcard src/*.cpp)
+INCLUDE  = $(wildcard include/*.hpp)
+TARGET   = build/output.exe
 
 .PHONY: all build clean run
 
 all: $(TARGET)
 
-$(TARGET): $(SRC) | build
-	$(COMPILER) $(FLAGS) $(SRC) $(INCLUDE) -o $(TARGET)
+$(TARGET): $(SRC) $(INCLUDE) | build
+	$(CXX) $(CXXFLAGS) $(SRC) -o $@
 
 build:
 	mkdir -p build
@@ -17,5 +17,5 @@ build:
 clean: 
 	rm -rf build
 
-run:
+run: all
 	./$(TARGET)
