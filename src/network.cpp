@@ -1,8 +1,3 @@
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <stdio.h>
-#include <vector>
-
 #include "network.hpp"
 
 // Listening Port.
@@ -79,13 +74,14 @@ int NetworkManager::setupFD(void)
     return 0;
 }
 
-int NetworkManager::forward(const std::vector<uint8_t> &packet)
+int NetworkManager::forward(const uint8_t *data, size_t length)
 {
     // Send the packet to its destination.
-    if (sendto(forward_socket, &packet, sizeof(packet), 0, 
+    if (sendto(forward_socket, &data, length, 0, 
         reinterpret_cast<sockaddr*>(&fd_address), sizeof(fd_address)) == -1)
     {
-        printf("Failed to send message:\n\tSocket: %d\n\tPort: %d\n\tPacket: %p", forward_socket, fd_address.sin_port, packet);
+        printf("Failed to send message:\n\tSocket: %d\n\tPort: %d\n\tBytes: %zu\n", 
+                forward_socket, ntohs(fd_address.sin_port), length);
         return -1;
     }
 
