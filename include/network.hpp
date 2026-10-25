@@ -4,6 +4,7 @@
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <cstdint>
+#include <stdio.h>
 #include <vector>
 
 class NetworkManager
@@ -15,13 +16,13 @@ class NetworkManager
         int forward_socket     = -1;   // Original Forwarding socket.
         const uint16_t PORT_LS = 5733; // Listening Port.
         const uint16_t PORT_FD = 5744; // Forwarding Port.
-        const uint8_t MAX_CON  = 16;   // Maximum connections to be queued.
+        const uint8_t  MAX_CON = 16;   // Maximum connections to be queued.
 
     public:
         int setupLS(void);
         int setupFD(void);
         int begin(void);
-        int forward(const std::vector<uint8_t> &packet);
+        int forward(const uint8_t *data, size_t length);
         // void terminate(uint8_t PORT);
 };
 
