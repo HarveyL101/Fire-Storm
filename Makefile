@@ -1,5 +1,5 @@
 COMPILER = g++
-FLAGS = --std=c++20 -Wall -Wextra -Wpedantic -Werror -Iinclude
+FLAGS = -std=c++20 -Wall -Wextra -Wpedantic -Werror -Iinclude
 SRC = src/*.cpp
 INCLUDE = include/*.hpp
 TARGET = build/output.exe
