@@ -3,24 +3,28 @@
 
 #include <netinet/in.h>
 #include <vector>
+#include <cstring>
 
 
 class PacketFramer
 {
     private:
-        const int MAX_PACKET           = 528; // Maximum observed size of network packets.
-        const uint8_t CTFS_HEADER_SIZE = 16;  // ctfs marker + sequenceID + payload length + 8 unknown bytes.
-        const uint8_t ETH_HEADER_SIZE  = 14;  // Observed ethernet header length.
-        const uint8_t MIN_IP_HEADER    = 20;  // Observed IP header length.
 
     public:
+        static constexpr size_t MAX_PACKET       = 528; // Maximum observed size of network packets.
+        static constexpr size_t CTFS_HEADER_SIZE = 16;  // ctfs marker + sequenceID + payload length + 8 unknown bytes.
+        static constexpr size_t ETH_HEADER_SIZE  = 14;  // Observed ethernet header length.
+        static constexpr size_t MIN_IP_HEADER    = 20;  // Observed IP header length.
+        
         enum class Status { NeedMore, Complete, Invalid };
-        enum class Kind { None, CTFS, Forward };
+        enum class Kind   { None, CTFS, Forward };
 
-        struct Result {
-            Status status;
-            size_t length = 0;
-            Kind   kind   = Kind::None;
+        struct Result 
+        {
+            Status status  = Status::NeedMore;
+            Kind   kind    = Kind::None;
+            size_t length  = 0; // Whole packet, only valid on a complete transmission.
+            uint16_t seqID = 0; // 0 is only valid for complete CTFS packets.
         };
 
         Result frame(const std::vector<uint8_t> &buffer);
