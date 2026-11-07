@@ -11,10 +11,10 @@ class PacketFramer
     private:
 
     public:
-        static constexpr size_t MAX_PACKET       = 528; // Maximum observed size of network packets.
-        static constexpr size_t CTFS_HEADER_SIZE = 16;  // ctfs marker(4) + sequenceID(2) + payload length(2) + unknown bytes(6) + byte buffer (2).
-        static constexpr size_t ETH_HEADER_SIZE  = 14;  // Observed ethernet header length.
-        static constexpr size_t MIN_IP_HEADER    = 20;  // Observed IP header length.
+        static constexpr size_t MAX_PACKET       = 16 + 65535; // Header + Largest 16-bit integer.
+        static constexpr size_t CTFS_HEADER_SIZE = 16;         // ctfs marker(4) + sequenceID(2) + payload length(2) + unknown bytes(6) + byte buffer (2).
+        static constexpr size_t ETH_HEADER_SIZE  = 14;         // Observed ethernet header length.
+        static constexpr size_t MIN_IP_HEADER    = 20;         // Observed IP header length.
         
         enum class Status { NeedMore, Complete, Invalid };
         enum class Kind   { None, CTFS, Forward };
