@@ -3,8 +3,10 @@
 
 #include <sys/socket.h>
 #include <netinet/in.h>
-#include <cstdint>
 #include <stdio.h>
+#include <unistd.h>
+#include <cerrno>
+#include <cstdint>
 #include <vector>
 
 class NetworkManager
@@ -23,6 +25,7 @@ class NetworkManager
         int setupFD(void);
         int begin(void);
         int forward(const uint8_t *data, size_t length);
+        void closeForward(void);
         // void terminate(uint8_t PORT);
 };
 
