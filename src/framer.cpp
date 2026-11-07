@@ -1,10 +1,10 @@
 #include "framer.hpp"
-#include "util/snippet16.hpp"
+#include "util/byte_slice.hpp"
 
 namespace
 {
     PacketFramer::Result needMore() { return{}; }
-    PacketFramer::Result invalid() { return{PacketFramer::Status::Invalid, PacketFramer::Kind::None, 0, 0}; }
+    PacketFramer::Result invalid()  { return{PacketFramer::Status::Invalid, PacketFramer::Kind::None, 0, 0}; }
     PacketFramer::Result complete(PacketFramer::Kind k, size_t length, uint16_t seqID = 0)
     {
         return {PacketFramer::Status::Complete, k, length, seqID};
@@ -27,12 +27,12 @@ PacketFramer::Result PacketFramer::frame(const std::vector<uint8_t> &buffer)
     {
         if (buffer.size() < CTFS_HEADER_SIZE) return needMore(); 
         // Checking 
-        const uint16_t seqID = snippet16(buffer, 4);
-        const size_t   total = CTFS_HEADER_SIZE + snippet16(buffer, 6);
+        const uint16_t seqID = byte_slice(buffer, 4);
+        const size_t   total = CTFS_HEADER_SIZE + byte_slice(buffer, 6);
         // Upper bounds checking for packet length.
         if (total > MAX_PACKET) return invalid();
         // Confirming that the packet is not split between recv() calls.
-        if (buffer.size() < total) return needMore(); 
+        if (buffer.size() < total) return needMore();
 
         return complete(Kind::CTFS, total, seqID);
     }
