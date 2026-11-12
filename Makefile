@@ -2,9 +2,9 @@ CXX      = g++
 CXXFLAGS = -std=c++20 -Wall -Wextra -Wpedantic -Werror -Iinclude
 SRC      = $(wildcard src/*.cpp)
 INCLUDE  = $(wildcard include/*.hpp)
-TARGET   = build/output.exe
+TARGET   = build/firestorm.exe
 
-.PHONY: all build clean run
+.PHONY: all build clean run container
 
 all: $(TARGET)
 
@@ -19,3 +19,6 @@ clean:
 
 run: all
 	./$(TARGET)
+
+container: 
+	./container.sh

@@ -10,8 +10,8 @@
 int main(void) 
 {
     NetworkManager NM;
-    PacketFramer PF;
-    Handler SM;
+    PacketFramer   PF;
+    Handler        SM;
 
     std::vector<uint8_t> holding; // Iterable memory block for splicing packets from.
     uint8_t buffer[32 * 1024];    // 32kb buffer, for fewer recv() calls.
@@ -39,8 +39,10 @@ int main(void)
             if (res.status == PacketFramer::Status::Invalid)
             {
                 printf("A packet's header Length/ Type is invalid, exiting the program now...\nClosing connections now...\n");
-                // Terminate here.
-                
+                // Close off the necessary connections (5733 & 5744) here.
+                close(client);
+                NM.closeForward();
+
                 break;
             }
 
@@ -57,7 +59,6 @@ int main(void)
                     if (NM.forward(holding.data(), res.length) != 0) return -1;
                 }
             }
-
             // Clear the now dispatched bytes and realign the start of the next with holding[0]
             holding.erase(holding.begin(), holding.begin() + res.length);
         }
@@ -71,7 +72,7 @@ int main(void)
     // Ensures the 5744 receiver sees the end of the byte stream.
     NM.closeForward();
 
-    // Write the PDF 
+    // Write the PDF from the mapped data.
     SM.build();
 
     close(client);
