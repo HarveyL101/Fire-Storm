@@ -65,42 +65,47 @@ int NetworkManager::setupFD(void)
 }
 
 int NetworkManager::forward(const uint8_t *data, size_t length)
-{
-    if (forward_socket == -1) { setupFD(); } // Only connecting once the port is required.
-
-    // Send the packet to its destination.
-    int sent = 0;
-    while (sent < static_cast<int>(length))
+{    
+    if (forward_socket == -1)
     {
-        if (!send(forward_socket, data + sent, length - sent, MSG_NOSIGNAL))
+        // Only connecting once the port is required.
+        if (setupFD() == -1) { return -1; }
+    }
+    // Send the packet to its destination.
+    size_t sent = 0;
+    while (sent < length)
+    {
+        ssize_t result = send(
+            forward_socket,
+            data + sent,
+            length - sent,
+            MSG_NOSIGNAL
+        );
+        // Negative return value indicates an error.
+        if (result == -1)
         {
             printf("Failed to send message:\n\tSocket: %d\n\tPort: %d\n\tBytes: %zu\n", 
                     forward_socket, ntohs(fd_address.sin_port), length);
             return -1;
         }
-        sent++;
+        // 0 return value indicates that no transmission progress was made.
+        if (result == 0)
+        {
+            printf("Connection closed during transmission.\n");
+            return -1;
+        }
+        // Increments `sent` by the actual count of bytes successfully transmitted.
+        sent += static_cast<size_t>(result);
     }
-    
 
     return 0;
 }
 
 void NetworkManager::closeForward(void)
 {
-    close(forward_socket);
-
     if (forward_socket != -1)
     {
+        close(forward_socket);
         forward_socket = -1;
-        return;
-    } else {
-        return;
     }
 }
-
-// void NetworkManager::terminate()
-// {
-//     // This will close off all active connections (5733 & 5744).
-//     // shutdown() keeps the file descriptor open for other uses, use close() to free that descriptor.
-//     return;
-// }
